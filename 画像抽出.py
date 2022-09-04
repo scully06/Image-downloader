@@ -31,8 +31,6 @@ def get_URL(url, file_path):
                 try:
                     with Image.open(file_path + "/" + filename) as r:
                         width ,height = r.size
-                        #print(width)
-                        #print(height)
                         im = Image.open(r, "r")
                         try:
                             im.verify()
@@ -52,4 +50,4 @@ def get_URL(url, file_path):
         except Exception as e:
             if os.path.exists(file_path + "/" + filename) == True:
                 os.remove(file_path + "/" + filename)
-            continue          
+            continue
