@@ -1,9 +1,6 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
-import tkinter.filedialog
+import tkinter.ttk, tkinter.messagebox, tkinter.filedialog
 import 画像抽出
-import sys
 import urllib.request, urllib.error
 root =Tk()
 root.title("URLから画像抽出")
@@ -20,17 +17,17 @@ def URL_input():
         url_temp = urllib.request.urlopen(t.get())
         url_temp.close()
     except:
-        messagebox.showwarning("エラー","正しいURLを入力してください。")
+        tkinter.messagebox.showwarning("エラー","正しいURLを入力してください。")
         return
     else:
         画像抽出.get_URL(t.get(),direct)
 #ウィジェットの作成
 try:
-    frame1 = ttk.Frame(root,padding=16)
-    label1 = ttk.Label(frame1,text ="URLを入力してください。")
+    frame1 = tkinter.ttk.Frame(root,padding=16)
+    label1 = tkinter.ttk.Label(frame1,text ="URLを入力してください。")
     t = StringVar()
-    entry1 = ttk.Entry(frame1,textvariable=t)
-    button1 = ttk.Button(
+    entry1 = tkinter.ttk.Entry(frame1,textvariable=t)
+    button1 = tkinter.ttk.Button(
         frame1,text="OK",
         command=URL_input
     )

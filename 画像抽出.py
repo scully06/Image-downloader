@@ -4,7 +4,7 @@ from tenacity import retry, wait_fixed
 import os
 from PIL import Image
 from fake_useragent import UserAgent
-import urllib.request, urllib.error
+import urllib.request
 @retry(wait=wait_fixed(3))
 def get_URL(url, file_path):
     ua = UserAgent()
@@ -13,7 +13,6 @@ def get_URL(url, file_path):
     soup = BeautifulSoup(res.text,"html.parser")
     for link in soup.find_all("img"):
         try:
-            temp_direc= file_path + "/" + os.path.basename(link.get("src"))
             urlData = requests.get(link.get("src"), headers=hedder).content
             filename = os.path.basename(link.get("src"))
             try:
@@ -23,7 +22,7 @@ def get_URL(url, file_path):
                 url_temp = urllib.request.urlopen(link.get("src"))
                 url_temp.close()
             except Exception as h:
-                print(h)
+                #print(h)
                 continue
             else:
                 with open(file_path + "/" + filename,"wb") as g:
