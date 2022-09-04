@@ -1,18 +1,15 @@
 import requests
-import time
 from bs4 import BeautifulSoup
 from tenacity import retry, wait_fixed
 import os
 from PIL import Image
 from fake_useragent import UserAgent
-from pathlib import Path
 import urllib.request, urllib.error
 @retry(wait=wait_fixed(3))
 def get_URL(url, file_path):
     ua = UserAgent()
     hedder={"User-Agent":str(ua.chrome)}
     res = requests.get(url, headers=hedder)
-    time.sleep(3)
     soup = BeautifulSoup(res.text,"html.parser")
     for link in soup.find_all("img"):
         try:
