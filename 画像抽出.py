@@ -1,20 +1,21 @@
 import requests
-import copy
 import lxml.html
 from tenacity import retry, wait_fixed
 import os
 from PIL import Image
 from fake_useragent import UserAgent
 import urllib.request
-
+from urllib.request import urlopen
 
 @retry(wait=wait_fixed(3))
 def get_URL(url, file_path):
+    opener = urllib.request.build_opener()
+    opener.addheaders = [("User-Agent", "Mozilla/5.0")]
+    urllib.request.install_opener(opener)
     url_list = []
     ua = UserAgent()
     hedder = {"User-Agent": str(ua.chrome)}
-    # res = requests.get(url, headers=hedder)
-    tree = lxml.html.parse(url)
+    tree = lxml.html.parse(urlopen(url))
     html = tree.getroot()
     for image in html.cssselect("img"):
         url_list.append(image.get("src"))
@@ -23,9 +24,6 @@ def get_URL(url, file_path):
             urlData = requests.get(link, headers=hedder).content
             filename = os.path.basename(link)
             try:
-                opener = urllib.request.build_opener()
-                opener.addheaders = [("User-Agent", "Mozilla/5.0")]
-                urllib.request.install_opener(opener)
                 url_temp = urllib.request.urlopen(link)
                 url_temp.close()
             except Exception as h:
