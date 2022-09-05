@@ -1,35 +1,42 @@
 import requests
-from bs4 import BeautifulSoup
+import copy
+import lxml.html
 from tenacity import retry, wait_fixed
 import os
 from PIL import Image
 from fake_useragent import UserAgent
 import urllib.request
+
+
 @retry(wait=wait_fixed(3))
 def get_URL(url, file_path):
+    url_list = []
     ua = UserAgent()
-    hedder={"User-Agent":str(ua.chrome)}
-    res = requests.get(url, headers=hedder)
-    soup = BeautifulSoup(res.text,"html.parser")
-    for link in soup.find_all("img"):
+    hedder = {"User-Agent": str(ua.chrome)}
+    # res = requests.get(url, headers=hedder)
+    tree = lxml.html.parse(url)
+    html = tree.getroot()
+    for image in html.cssselect("img"):
+        url_list.append(image.get("src"))
+    for link in url_list:
         try:
-            urlData = requests.get(link.get("src"), headers=hedder).content
-            filename = os.path.basename(link.get("src"))
+            urlData = requests.get(link, headers=hedder).content
+            filename = os.path.basename(link)
             try:
                 opener = urllib.request.build_opener()
                 opener.addheaders = [("User-Agent", "Mozilla/5.0")]
                 urllib.request.install_opener(opener)
-                url_temp = urllib.request.urlopen(link.get("src"))
+                url_temp = urllib.request.urlopen(link)
                 url_temp.close()
             except Exception as h:
-                #print(h)
+                print(h)
                 continue
             else:
-                with open(file_path + "/" + filename,"wb") as g:
+                with open(file_path + "/" + filename, "wb") as g:
                     g.write(urlData)
                 try:
                     with Image.open(file_path + "/" + filename) as r:
-                        width ,height = r.size
+                        width , height = r.size
                         im = Image.open(r, "r")
                         try:
                             im.verify()
@@ -45,8 +52,9 @@ def get_URL(url, file_path):
                 else:
                     continue
             if a == 0:
-                os.remove(file_path + "/" + filename)             
+                os.remove(file_path + "/" + filename)
         except Exception as e:
             if os.path.exists(file_path + "/" + filename) == True:
                 os.remove(file_path + "/" + filename)
+            #print(e)
             continue
