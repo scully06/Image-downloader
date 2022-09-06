@@ -21,38 +21,31 @@ def get_URL(url, file_path):
         url_list.append(image.get("src"))
     for link in url_list:
         try:
-            urlData = requests.get(link, headers=hedder).content
+            urlData = urlopen(link).read()
             filename = os.path.basename(link)
+            with open(file_path + "/" + filename, "wb") as g:
+                g.write(urlData)
             try:
-                url_temp = urllib.request.urlopen(link)
-                url_temp.close()
-            except Exception as h:
-                print(h)
-                continue
+                with Image.open(file_path + "/" + filename) as r:
+                    width , height = r.size
+                    im = Image.open(r, "r")
+                    try:
+                        im.verify()
+                    except Exception as q:
+                        print("1")
+                        print(q)
+                        a = 0
+            except Exception as j:
+                print(j)
+                a = 0
+            if width <= 500 or height <= 500:
+                a = 0
             else:
-                with open(file_path + "/" + filename, "wb") as g:
-                    g.write(urlData)
-                try:
-                    with Image.open(file_path + "/" + filename) as r:
-                        width , height = r.size
-                        im = Image.open(r, "r")
-                        try:
-                            im.verify()
-                        except Exception as q:
-                            print("1")
-                            print(q)
-                            a = 0
-                except Exception as j:
-                    print(j)
-                    a = 0
-                if width <= 500 or height <= 500:
-                    a = 0
-                else:
-                    continue
+                continue
             if a == 0:
                 os.remove(file_path + "/" + filename)
         except Exception as e:
             if os.path.exists(file_path + "/" + filename) == True:
                 os.remove(file_path + "/" + filename)
-            #print(e)
+            print(e)
             continue
