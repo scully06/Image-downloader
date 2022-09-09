@@ -1,43 +1,56 @@
-from tkinter import *
-import tkinter.ttk, tkinter.messagebox, tkinter.filedialog
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 import 画像抽出
 import urllib.request, urllib.error
-root =Tk()
-root.title("URLから画像抽出")
-#関数の作成
+import os.path
+def show_pop():
+    error_message = QMessageBox()   
+    error_message.setWindowTitle("エラー")
+    error_message.setText("正しいURLを入れてください。")
+    error_message.setStandardButtons(QMessageBox.Ok)
+    error_message.buttonClicked.connect(popup)
+    sys.exec_()
+def popup(i):
+    print(i.text())
 def URL_input():
-    direct = tkinter.filedialog.askdirectory(initialdir = dir)
-    print(direct)
-    if direct == "" or t.get() =="":
-        return
-    opener = urllib.request.build_opener()
-    opener.addheaders = [("User-Agent", "Mozilla/5.0")]
-    urllib.request.install_opener(opener)
     try:
-        url_temp = urllib.request.urlopen(t.get())
-        url_temp.close()
-    except:
-        tkinter.messagebox.showwarning("エラー","正しいURLを入力してください。")
+        rootpath = os.path.abspath(os.path.dirname("__file__"))
+        direct = QFileDialog.getExistingDirectory(None,"rootpath", rootpath)
+        urlo = url.toPlainText()
+        if direct == "" or urlo =="":
+            print("1")
+            return
+    except Exception as t:
+        print(t)
         return
     else:
-        画像抽出.get_URL(t.get(),direct)
-#ウィジェットの作成
-try:
-    frame1 = tkinter.ttk.Frame(root,padding=16)
-    label1 = tkinter.ttk.Label(frame1,text ="URLを入力してください。")
-    t = StringVar()
-    entry1 = tkinter.ttk.Entry(frame1,textvariable=t)
-    button1 = tkinter.ttk.Button(
-        frame1,text="OK",
-        command=URL_input
-    )
-    direct = StringVar()
-except Exception as e:
-    print("2")
-    print(e)
-#レイアウト
-frame1.pack()
-label1.grid(row = 0, column = 0)
-entry1.grid(row = 0, column = 1)
-button1.grid(row = 0, column = 2)
-root.mainloop()
+        opener = urllib.request.build_opener()
+        opener.addheaders = [("User-Agent", "Mozilla/5.0")]
+        urllib.request.install_opener(opener)
+        try:
+            url_temp = urllib.request.urlopen(urlo)
+            url_temp.close()
+        except Exception as y:
+            print(y)
+            return
+        else:
+            print(urlo)
+            print(direct)
+            画像抽出.get_URL(urlo,direct)
+app = QApplication(sys.argv)
+root = QWidget()
+root.resize(300,250)
+root.setWindowTitle("画像ダウンローダー")
+#ここから入力フォーム
+url = QTextEdit(root)
+url.setPlaceholderText("URLを入力してください。")
+#ここからボタン
+button = QPushButton(root)
+button.setText("OK")
+button.clicked.connect(URL_input)
+button.move(100,200)
+
+root.show()
+sys.exit(app.exec_())
