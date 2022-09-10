@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 import 画像抽出
 import urllib.request, urllib.error
 import os.path
+import time
 def show_pop():
     error_message = QMessageBox()   
     error_message.setWindowTitle("エラー")
@@ -19,6 +20,7 @@ def URL_input():
         rootpath = os.path.abspath(os.path.dirname("__file__"))
         direct = QFileDialog.getExistingDirectory(None,"rootpath", rootpath)
         urlo = url.toPlainText()
+        print(urlo)
         if direct == "" or urlo =="":
             print("1")
             return
@@ -36,8 +38,9 @@ def URL_input():
             print(y)
             return
         else:
-            print(urlo)
-            print(direct)
+            #print(urlo)
+            #print(direct)
+            print("3")
             画像抽出.get_URL(urlo,direct)
 app = QApplication(sys.argv)
 root = QWidget()

@@ -20,6 +20,7 @@ def get_URL(url, file_path):
     html = tree.getroot()
     for image in html.cssselect("img"):
         url_list.append(image.get("src"))
+    set_url = set(url_list)
     def get_img(link):
         try:
             a = 1
@@ -49,9 +50,9 @@ def get_URL(url, file_path):
         except Exception as e:
             if os.path.exists(file_path + "/" + filename) == True:
                 os.remove(file_path + "/" + filename)
-            print(e)
+            #print(e)
     try:
         with futures.ThreadPoolExecutor() as executor:
-            executor.map(get_img, url_list)
+            executor.map(get_img, set_url)
     except Exception as j:
         print(j)
