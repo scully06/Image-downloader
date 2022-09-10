@@ -18,9 +18,9 @@ def get_URL(url, file_path):
     hedder = {"User-Agent": str(ua.chrome)}
     tree = lxml.html.parse(urlopen(url))
     html = tree.getroot()
-    for image in html.cssselect("img"):
-        url_list.append(image.get("src"))
-    set_url = set(url_list)
+    image_list = html.cssselect("img")
+    image = list(map(lambda image_list:image_list.get("src"),image_list))
+    set_url = set(image)
     def get_img(link):
         try:
             a = 1
