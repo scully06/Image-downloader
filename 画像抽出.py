@@ -4,6 +4,7 @@ from PIL import Image
 import urllib.request
 from urllib.request import urlopen
 from concurrent import futures
+import string
 #下はダウンロード用関数
 def get_URL(url, file_path):
     opener = urllib.request.build_opener()
@@ -18,25 +19,29 @@ def get_URL(url, file_path):
             a = 1
             urlData = urlopen(link).read()
             filename = os.path.basename(link)
-            path = file_path + "/"
-            with open(path + filename, "wb") as g:
+            info = [file_path,"/",filename]
+            file_full = "".join(info)
+            print(file_full)
+            with open(file_full, "wb") as g:
                 g.write(urlData)
             try:
-                with Image.open(path + filename) as r:
+                with Image.open(file_full) as r:
                     width , height = r.size
-                    im = Image.open(r, "r")
-                    try:
-                        im.verify()
-                    except Exception:
-                        a = 0
-            except Exception:
+                    with Image.open(r, "r") as im:
+                        try:
+                            im.verify()
+                        except Exception:
+                            a = 0
+            except Exception as fuck:
+                print(fuck)
                 pass
-            if width <= 500 or height <= 500:
+            if width * height < 250000:
                 a = 0
-            if a == 0:
-                os.remove(path + filename)
+            if a ==0:
+                os.remove(file_full)
         except Exception as e:
-            if os.path.exists(file_path + "/" + filename) == True:
-                os.remove(path + filename)
+            print(e)
+            if os.path.exists(file_full) == True:
+                os.remove(file_full)
     with futures.ThreadPoolExecutor() as executor:
         executor.map(get_img, image)
